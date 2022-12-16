@@ -1,15 +1,20 @@
 package models;
 
+import constants.BrowserConstants;
 import constants.TaskTypeEnum;
+import helpers.DateTimeHelper;
 import helpers.SeleniumHelper;
+import helpers.UserInputHelper;
 
 public class GenerateViewTask extends Task {
     private final YouTubeVideo youtubeVideo;
     private int generatedViewCount;
+    private final boolean headlessRequired;
 
-    public GenerateViewTask(String taskID, YouTubeVideo video) {
+    public GenerateViewTask(String taskID, YouTubeVideo video, boolean isHeadlessRequired) {
         super(taskID, TaskTypeEnum.GENERATE_VIEW_TASK);
         this.youtubeVideo = video;
+        this.headlessRequired = isHeadlessRequired;
         this.generatedViewCount = 0;
     }
 
@@ -39,7 +44,7 @@ public class GenerateViewTask extends Task {
                "\n--> ID: "+this.getTaskID()+
                "\n--> Type: "+this.getTaskType()+
                "\n--> Started At: "+this.getStartDateTime()+
-               "\n--> YouTube Video Name: "+this.youtubeVideo.getVideoName()+
+               "\n--> YouTube Video ID: "+this.youtubeVideo.getVideoId()+
                "\n--> YouTube Video URL: "+this.youtubeVideo.getVideoURL()+
                "\n--> Generated Views: "+this.getGeneratedViewCount();
     }
@@ -49,10 +54,14 @@ public class GenerateViewTask extends Task {
      */
     @Override
     public void start() {
+        BrowserConstants browser = UserInputHelper.getBrowserChoiceInput();
         while (this.getGeneratedViewCount() < Integer.MAX_VALUE) {
-            SeleniumHelper.initializeSeleniumHelper(60L, false);
-            SeleniumHelper.getView(this.youtubeVideo.getVideoURL());
-            this.setGeneratedViewCount(this.getGeneratedViewCount()+1);
+            System.out.println("---------------------------------");
+            System.out.println("STARTING VIEW GENERATION: "+ DateTimeHelper.getCurrentLocalDateTimeString());
+            this.setGeneratedViewCount(this.getGeneratedViewCount()+
+                    SeleniumHelper.getView(this.youtubeVideo.getVideoURL(),
+                            browser, this.headlessRequired, youtubeVideo.getVideoId()));
+            System.out.println("GENERATED VIEW: "+this.getGeneratedViewCount());
         }
     }
 }

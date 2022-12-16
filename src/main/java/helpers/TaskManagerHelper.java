@@ -45,9 +45,10 @@ public class TaskManagerHelper {
                 Task generateViewTask = new GenerateViewTask(
                         taskID,
                         new YouTubeVideo(
-                                UserInputHelper.getValidatedYouTubeVideoNameFromUser(),
+                                UserInputHelper.getValidatedYouTubeVideoIdFromUser(),
                                 UserInputHelper.getValidatedYouTubeVideoURLFromUser()
-                        )
+                        ),
+                        UserInputHelper.getIfHeadlessModeRequiredInput()
                 );
                 taskServicesMap.put(taskID, generateViewTask);
                 generateViewTask.start();
